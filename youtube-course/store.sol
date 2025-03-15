@@ -9,6 +9,8 @@ contract Store is Ownable {
     mapping(address => mapping(uint256 => uint256)) public userPurchase;
     /// @notice product id => quantity
     mapping(uint256 => uint256) public productPurchase;
+    /// @notice discount code => discount in percents (1-100)
+    mapping(string => uint256) public discountCodes;
 
     struct Product {
         string name;
@@ -30,6 +32,7 @@ contract Store is Ownable {
     error NotEnoughFunds();
     error NotEnoughProducts();
     error WrongBatchStructure();
+    error IncorrectDiscount();
 
     constructor(address initialOwner) Ownable(initialOwner) {}
 
@@ -60,11 +63,35 @@ contract Store is Ownable {
         return topSelling;
     }
 
-    function buy(uint256 _id, uint256 _quantity) external payable {
+    function getTotalRevenue() public view returns(uint256) {
+        uint256 totalRevenue = 0;
+
+        for (uint i = 0; i < products.length; i++) {
+            Product storage product = products[i];
+            totalRevenue += productPurchase[product.id] * product.price;
+        }
+
+        return totalRevenue;
+    }
+
+    function getUserPurchase(address _userAddress) public view returns(uint256) {
+        uint256 userPurchased = 0;
+
+        for (uint i = 0; i < products.length; i++) {
+            Product storage product = products[i];
+            userPurchased += userPurchase[_userAddress][product.id] * product.price;
+        }
+
+        return userPurchased;
+    }
+
+    function buy(uint256 _id, uint256 _quantity, string calldata _discountCode) external payable {
         if (_quantity <= 0) revert ZeroQuantity();
         if (getStock(_id) < _quantity) revert OutOfStock();
-        
-        uint256 totalPrice = getPrice(_id) * _quantity;
+
+        uint256 productPrice = getPrice(_id);
+        productPrice -= productPrice * discountCodes[_discountCode] / 100;
+        uint256 totalPrice = productPrice * _quantity;
         if (msg.value < totalPrice) revert NotEnoughFunds();
 
         _buyProcess(msg.sender, _id, _quantity);
@@ -92,7 +119,7 @@ contract Store is Ownable {
         emit Refund(msg.sender, _id, _quantity);
     }
 
-    function batchBuy(uint256[] calldata _ids, uint256[] calldata _quantities) external payable {
+    function batchBuy(uint256[] calldata _ids, uint256[] calldata _quantities, string calldata _discountCode) external payable {
         if (_ids.length != _quantities.length) revert WrongBatchStructure();
 
         uint256 totalPrice = 0;
@@ -103,7 +130,9 @@ contract Store is Ownable {
             if (q <= 0) revert ZeroQuantity();
             if (getStock(i) < q) revert OutOfStock();
 
-            totalPrice += getPrice(id) * q;
+            uint256 productPrice = getPrice(id);
+            productPrice -= productPrice * discountCodes[_discountCode] / 100;
+            totalPrice += productPrice * q;
         }
 
         if (msg.value < totalPrice) revert NotEnoughFunds();
@@ -130,6 +159,11 @@ contract Store is Ownable {
     function addProduct(string calldata _name, uint256 _id, uint256 _stock, uint256 _price) external onlyOwner {
         if (_isIdExist(_id)) revert IdAlreadyExist();
         products.push(Product(_name, _id, _stock, _price));
+    }
+
+    function addDiscountCode(string calldata _code, uint256 _discount) external onlyOwner {
+        if (_discount <= 0 || _discount > 100) revert IncorrectDiscount();
+        discountCodes[_code] = _discount;
     }
 
     function deleteProduct(uint256 _id) external onlyOwner {
@@ -194,8 +228,8 @@ contract Store is Ownable {
 
     // add refund function + 
     // add top selling products function + 
-    // add get total revenue function
-    // add get user purchase function
-    // add discount codes functionality
-    // add struct purchase
+    // add get total revenue function +
+    // add get user purchase function +
+    // add discount codes functionality +
+    // add struct purchase -
 }

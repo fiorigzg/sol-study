@@ -28,12 +28,22 @@
 			},
 			{
 				"inputs": [],
+				"name": "IncorrectDiscount",
+				"type": "error"
+			},
+			{
+				"inputs": [],
 				"name": "NoMoney",
 				"type": "error"
 			},
 			{
 				"inputs": [],
 				"name": "NotEnoughFunds",
+				"type": "error"
+			},
+			{
+				"inputs": [],
+				"name": "NotEnoughProducts",
 				"type": "error"
 			},
 			{
@@ -118,6 +128,49 @@
 				"type": "event"
 			},
 			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "_refounder",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "_id",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "_quantity",
+						"type": "uint256"
+					}
+				],
+				"name": "Refund",
+				"type": "event"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "_code",
+						"type": "string"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_discount",
+						"type": "uint256"
+					}
+				],
+				"name": "addDiscountCode",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
 				"inputs": [
 					{
 						"internalType": "string",
@@ -156,6 +209,11 @@
 						"internalType": "uint256[]",
 						"name": "_quantities",
 						"type": "uint256[]"
+					},
+					{
+						"internalType": "string",
+						"name": "_discountCode",
+						"type": "string"
 					}
 				],
 				"name": "batchBuy",
@@ -174,6 +232,11 @@
 						"internalType": "uint256",
 						"name": "_quantity",
 						"type": "uint256"
+					},
+					{
+						"internalType": "string",
+						"name": "_discountCode",
+						"type": "string"
 					}
 				],
 				"name": "buy",
@@ -192,6 +255,25 @@
 				"name": "deleteProduct",
 				"outputs": [],
 				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "",
+						"type": "string"
+					}
+				],
+				"name": "discountCodes",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
 				"type": "function"
 			},
 			{
@@ -269,6 +351,51 @@
 			},
 			{
 				"inputs": [],
+				"name": "getTopSelling",
+				"outputs": [
+					{
+						"internalType": "uint256[3]",
+						"name": "",
+						"type": "uint256[3]"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "getTotalRevenue",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "_userAddress",
+						"type": "address"
+					}
+				],
+				"name": "getUserPurchase",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
 				"name": "owner",
 				"outputs": [
 					{
@@ -297,6 +424,24 @@
 					}
 				],
 				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "_id",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_quantity",
+						"type": "uint256"
+					}
+				],
+				"name": "refund",
+				"outputs": [],
+				"stateMutability": "nonpayable",
 				"type": "function"
 			},
 			{
@@ -417,6 +562,9 @@
 		"userdoc": {
 			"kind": "user",
 			"methods": {
+				"discountCodes(string)": {
+					"notice": "discount code => discount in percents (1-100)"
+				},
 				"productPurchase(uint256)": {
 					"notice": "product id => quantity"
 				},
@@ -429,7 +577,7 @@
 	},
 	"settings": {
 		"compilationTarget": {
-			"store.sol": "Store"
+			"youtube-course/store.sol": "Store"
 		},
 		"evmVersion": "cancun",
 		"libraries": {},
@@ -459,12 +607,12 @@
 				"dweb:/ipfs/Qmax9WHBnVsZP46ZxEMNRQpLQnrdE4dK8LehML1Py8FowF"
 			]
 		},
-		"store.sol": {
-			"keccak256": "0x1e55a3c7afe3c2c25d22230fa02a5891f921df9ea89dc85fbc0b704583c20443",
+		"youtube-course/store.sol": {
+			"keccak256": "0xf8259eb732eacad4902662911ecbd9a292e61fb44066e3fe679713244523f3f5",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://0be78014465f3e37a7cb46e38ec04443fba4b540bef8ec2a242124c40c084df0",
-				"dweb:/ipfs/QmapotVuVZiuvHW52E299ptcBD71HH3mGrvWQYpR9J8ZnS"
+				"bzz-raw://7dc1bd58e7d6d0e95e408bf1ca625aaf4c06d0e367b8ffe62efc7555bf0ae1ed",
+				"dweb:/ipfs/QmakttuNZyGjb1GsJA8BtHgA6tzdhCgn5WYEHuTemcB4fL"
 			]
 		}
 	},
